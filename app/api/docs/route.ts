@@ -1,11 +1,11 @@
-import { NextRequest } from 'next/server';
-import { Message as VercelChatMessage, StreamingTextResponse } from 'ai';
+import { NextRequest } from "next/server";
+import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
 
-import { ChatOpenAI } from 'langchain/chat_models/openai';
-import { BytesOutputParser } from 'langchain/schema/output_parser';
-import { PromptTemplate } from 'langchain/prompts';
+import { ChatOpenAI } from "langchain/chat_models/openai";
+import { BytesOutputParser } from "langchain/schema/output_parser";
+import { PromptTemplate } from "langchain/prompts";
 
-export const runtime = 'edge';
+export const runtime = "edge";
 
 /**
  * Basic memory formatter that stringifies and passes
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
   const chain = prompt.pipe(model).pipe(outputParser);
 
   const stream = await chain.stream({
-    chat_history: formattedPreviousMessages.join('\n'),
+    chat_history: formattedPreviousMessages.join("\n"),
     input: currentMessageContent,
   });
 

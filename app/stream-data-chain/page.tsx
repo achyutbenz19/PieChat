@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useCompletion } from 'ai/react';
+import { useCompletion } from "ai/react";
 
 export default function Chat() {
   const { completion, input, handleInputChange, handleSubmit, error } =
-    useCompletion({ api: '/api/stream-data-chain' });
+    useCompletion({ api: "/api/stream-data-chain" });
 
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">

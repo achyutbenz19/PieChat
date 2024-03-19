@@ -1,8 +1,8 @@
-import { StreamingTextResponse, LangChainStream, Message } from 'ai';
-import { ChatOpenAI } from 'langchain/chat_models/openai';
-import { AIMessage, HumanMessage } from 'langchain/schema';
+import { StreamingTextResponse, LangChainStream, Message } from "ai";
+import { ChatOpenAI } from "langchain/chat_models/openai";
+import { AIMessage, HumanMessage } from "langchain/schema";
 
-export const runtime = 'edge';
+export const runtime = "edge";
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
@@ -15,8 +15,8 @@ export async function POST(req: Request) {
 
   llm
     .call(
-      (messages as Message[]).map(m =>
-        m.role == 'user'
+      (messages as Message[]).map((m) =>
+        m.role == "user"
           ? new HumanMessage(m.content)
           : new AIMessage(m.content),
       ),
