@@ -1,2 +1,2 @@
 # PieChat
-interactive data visualization and communication platform
+Interactive Data Visualization and Communication Platform
