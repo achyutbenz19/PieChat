@@ -103,13 +103,15 @@ const FileUploader = ({ focus }: FileUploaderProps) => {
           >
             {labelText}
           </span>
-          <span className="text-xs text-neutral-400 dark:text-neutral-500">
-            or
-          </span>
           {!file ? (
-            <div className="border hover:bg-neutral-200 dark:hover:bg-neutral-800 px-2 py-1.5 rounded-lg">
-              Browse
-            </div>
+            <>
+              <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                or
+              </span>
+              <div className="border hover:bg-neutral-200 dark:hover:bg-neutral-800 px-2 py-1.5 rounded-lg">
+                Browse
+              </div>
+            </>
           ) : (
             <Button onClick={handleChat}>Chat</Button>
           )}
