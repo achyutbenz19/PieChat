@@ -1,29 +1,43 @@
-import { StreamingTextResponse, LangChainStream, Message } from "ai";
-import { ChatOpenAI } from "langchain/chat_models/openai";
-import { AIMessage, HumanMessage } from "langchain/schema";
+import { NextRequest } from 'next/server';
+import { Message as VercelChatMessage, StreamingTextResponse } from 'ai';
+import { ChatOpenAI } from 'langchain/chat_models/openai';
+import { BytesOutputParser } from 'langchain/schema/output_parser';
+import { PromptTemplate } from 'langchain/prompts';
 
-export const runtime = "edge";
+export const runtime = 'edge';
 
-export async function POST(req: Request) {
-  const { messages } = await req.json();
+const formatMessage = (message: VercelChatMessage) => {
+  return `${message.role}: ${message.content}`;
+};
 
-  const { stream, handlers } = LangChainStream();
+const TEMPLATE = `You are a pirate named Patchy. All responses must be extremely verbose and in pirate dialect.
+ 
+Current conversation:
+{chat_history}
+ 
+User: {input}
+AI:`;
 
-  const llm = new ChatOpenAI({
-    streaming: true,
+export async function POST(req: NextRequest) {
+  const body = await req.json();
+  const messages = body.messages ?? [];
+  const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
+  const currentMessageContent = messages[messages.length - 1].content;
+
+  const prompt = PromptTemplate.fromTemplate(TEMPLATE);
+
+  const model = new ChatOpenAI({
+    temperature: 0.8,
   });
 
-  llm
-    .call(
-      (messages as Message[]).map((m) =>
-        m.role == "user"
-          ? new HumanMessage(m.content)
-          : new AIMessage(m.content),
-      ),
-      {},
-      [handlers],
-    )
-    .catch(console.error);
+  const outputParser = new BytesOutputParser();
+
+  const chain = prompt.pipe(model).pipe(outputParser);
+
+  const stream = await chain.stream({
+    chat_history: formattedPreviousMessages.join('\n'),
+    input: currentMessageContent,
+  });
 
   return new StreamingTextResponse(stream);
 }
