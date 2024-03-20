@@ -108,7 +108,13 @@ const FileUploader = ({ focus }: FileUploaderProps) => {
               <span className="text-xs text-neutral-400 dark:text-neutral-300">
                 or
               </span>
-              <div className={cn("border dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 px-2 duration-500 transition-all py-1.5 rounded-lg", focus && "border-2 border-neutral-600 dark:border-neutral-300")}>
+              <div
+                className={cn(
+                  "border dark:border-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-700 px-2 duration-500 transition-all py-1.5 rounded-lg",
+                  focus &&
+                    "border-2 border-neutral-600 dark:border-neutral-300",
+                )}
+              >
                 Browse
               </div>
             </>
