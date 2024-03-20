@@ -1,15 +1,17 @@
 "use client";
 import { FileUploaderProps } from "@/lib/type";
 import { cn } from "@/lib/utils";
-import { Check, Plus } from "lucide-react";
+import { Check, Loader2Icon, Plus } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { uuid } from "uuidv4";
+import { Spinner } from "@nextui-org/react";
 
 const FileUploader = ({ focus }: FileUploaderProps) => {
   const router = useRouter();
+  const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -28,6 +30,7 @@ const FileUploader = ({ focus }: FileUploaderProps) => {
   };
 
   const handleUpload = async (file: File) => {
+    setUploading(true);
     console.log(file.name);
   };
 
@@ -62,11 +65,13 @@ const FileUploader = ({ focus }: FileUploaderProps) => {
     router.push(`/chat/${uuid()}`);
   };
 
-  const labelText = isDragOver
-    ? "Drop file here"
-    : file
-      ? "File uploaded"
-      : "Drag and drop your CSV file here";
+  const labelText = uploading
+    ? "Uploading..."
+    : isDragOver
+      ? "Drop file here"
+      : file
+        ? "File uploaded"
+        : "Drag and drop your CSV file here";
 
   return (
     <div className="p-2 h-full">
@@ -84,7 +89,9 @@ const FileUploader = ({ focus }: FileUploaderProps) => {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
-          {file ? (
+          {uploading ? (
+            <Spinner size="sm" />
+          ) : file ? (
             <Check className="h-10 w-10" />
           ) : (
             <Plus
@@ -103,7 +110,9 @@ const FileUploader = ({ focus }: FileUploaderProps) => {
           >
             {labelText}
           </span>
-          {!file ? (
+          {uploading ? (
+            <></>
+          ) : !file ? (
             <>
               <span className="text-xs text-neutral-400 dark:text-neutral-300">
                 or
