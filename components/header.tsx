@@ -7,14 +7,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Menu, SquareArrowOutUpLeft } from "lucide-react";
+import { Home, Menu } from "lucide-react";
 import { ModeToggle } from "./theme-toggle";
+import Link from "next/link";
 
 const Header = () => {
   return (
     <div className="p-4 flex flex-row justify-between top-0">
       <div className="border rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 cursor-pointer">
-        <SquareArrowOutUpLeft className="h-6 w-6 text-neutral-900 dark:text-neutral-300" />
+        <Link href="/">
+          <Home className="h-6 w-6 text-neutral-900 dark:text-neutral-300" />
+        </Link>
       </div>
       <Sheet>
         <SheetTrigger asChild>

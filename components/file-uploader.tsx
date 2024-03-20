@@ -90,7 +90,8 @@ const FileUploader = ({ focus }: FileUploaderProps) => {
             <Plus
               className={cn(
                 "h-10 w-10 text-neutral-600 duration-500 transition-all",
-                focus && "font-extrabold text-neutral-800 dark:text-neutral-300",
+                focus &&
+                  "font-extrabold text-neutral-800 dark:text-neutral-300",
               )}
             />
           )}
