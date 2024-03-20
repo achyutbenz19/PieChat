@@ -7,17 +7,22 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, SquareArrowOutUpLeft } from "lucide-react";
 import { ModeToggle } from "./theme-toggle";
 
 const Header = () => {
   return (
-    <div className="h-10 p-2 flex flex-row justify-between top-0">
+    <div className="p-2 flex flex-row justify-between top-0">
+      <div className="border rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 cursor-pointer">
+        <SquareArrowOutUpLeft className="h-6 w-6 text-neutral-900 dark:text-neutral-300" />
+      </div>
       <Sheet>
         <SheetTrigger asChild>
-          <Menu className="cursor-pointer hover:scale-105" />
+          <div className="border rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 cursor-pointer">
+            <Menu className="cursor-pointer1 hover:scale-105 text-neutral-900 dark:text-neutral-300" />
+          </div>
         </SheetTrigger>
-        <SheetContent className="justify-between flex flex-col" side="left">
+        <SheetContent className="justify-between flex flex-col">
           <SheetHeader>
             <SheetTitle>Chat History</SheetTitle>
           </SheetHeader>
@@ -29,7 +34,6 @@ const Header = () => {
           </SheetFooter>
         </SheetContent>
       </Sheet>
-      hi
     </div>
   );
 };
