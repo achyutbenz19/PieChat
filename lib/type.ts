@@ -5,3 +5,7 @@ export type ChatInputProps = {
   input: string;
   handleInputChange: ChangeEventHandler<HTMLInputElement>;
 };
+
+export type FileUploaderProps = {
+  focus: boolean;
+};
