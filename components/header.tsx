@@ -12,7 +12,7 @@ import { ModeToggle } from "./theme-toggle";
 
 const Header = () => {
   return (
-    <div className="p-2 flex flex-row justify-between top-0">
+    <div className="p-4 flex flex-row justify-between top-0">
       <div className="border rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-800 cursor-pointer">
         <SquareArrowOutUpLeft className="h-6 w-6 text-neutral-900 dark:text-neutral-300" />
       </div>
