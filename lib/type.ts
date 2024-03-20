@@ -9,3 +9,9 @@ export type ChatInputProps = {
 export type FileUploaderProps = {
   focus: boolean;
 };
+
+export type ChatPageProps = {
+  params: {
+    chatId: string;
+  };
+};

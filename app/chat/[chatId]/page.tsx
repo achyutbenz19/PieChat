@@ -1,12 +1,7 @@
 "use client";
 import ChatInput from "@/components/chat-input";
+import { ChatPageProps } from "@/lib/type";
 import { useChat } from "ai/react";
-
-type ChatPageProps = {
-  params: {
-    chatId: string;
-  };
-};
 
 export default function Chat({ params }: ChatPageProps) {
   const { messages, input, handleInputChange, handleSubmit } = useChat();

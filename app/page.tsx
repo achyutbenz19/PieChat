@@ -1,14 +1,21 @@
 "use client";
 import FileUploader from "@/components/file-uploader";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { uuid } from "uuidv4";
 
 export default function Component() {
+  const router = useRouter();
   const [focus, setFocus] = useState(false);
 
   const handleStart = () => {
     setFocus(true);
     setTimeout(() => setFocus(false), 3000);
+  };
+
+  const handleSubmit = () => {
+    router.push(`/chat/${uuid()}`);
   };
 
   return (
