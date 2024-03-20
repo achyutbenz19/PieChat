@@ -73,7 +73,7 @@ const FileUploader = ({ focus }: FileUploaderProps) => {
       <div
         className={cn(
           "h-full rounded-lg flex duration-500 transition-all items-center justify-center border-dashed border-neutral-300 dark:border-neutral-700 border-2",
-          focus && "border-neutral-800",
+          focus && "border-neutral-800 dark:border-neutral-300",
         )}
       >
         <label
@@ -90,14 +90,14 @@ const FileUploader = ({ focus }: FileUploaderProps) => {
             <Plus
               className={cn(
                 "h-10 w-10 text-neutral-600 duration-500 transition-all",
-                focus && "font-extrabold text-neutral-900",
+                focus && "font-extrabold text-neutral-800 dark:text-neutral-300",
               )}
             />
           )}
           <span
             className={cn(
               "text-sm text-neutral-400 duration-500 transition-all dark:text-neutral-500",
-              focus && "font-bold text-neutral-900",
+              focus && "font-bold text-neutral-800 dark:text-neutral-300",
             )}
           >
             {labelText}
