@@ -38,6 +38,6 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({
-    text: "Successfully ingested pdf",
+    text: "Successfully ingested CSV",
   });
 }
