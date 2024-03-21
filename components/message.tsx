@@ -9,13 +9,10 @@ const Message = ({ message }: MessageProps) => {
   return (
     <div className="flex flex-row space-x-2">
       <UserAvatar
-        src={
-          message.role === "user"
-            ? user?.user_metadata.avatar_url!
-            : "/logo.svg"
-        }
+        user={message.role === "user"}
+        src={user?.user_metadata.avatar_url!}
       />
-      <Markdown className="bg-neutral-200 w-full rounded-lg p-2">
+      <Markdown className="bg-neutral-200 dark:bg-neutral-900 w-full rounded-lg p-3 px-4">
         {message.content}
       </Markdown>
     </div>

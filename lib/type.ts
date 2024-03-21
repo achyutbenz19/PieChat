@@ -33,4 +33,5 @@ export type MessageProps = {
 export type UserAvatarProps = {
   src?: string;
   className?: string;
+  user?: boolean;
 };
