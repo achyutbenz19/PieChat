@@ -1,23 +1,31 @@
 import { NextRequest } from "next/server";
 import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
-import { ChatOpenAI } from "langchain/chat_models/openai";
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
-  PromptTemplate,
 } from "langchain/prompts";
 import { loadPineconeStore } from "../utils/pinecone";
-import { OpenAIEmbeddings } from "@langchain/openai";
+import { OpenAIEmbeddings, ChatOpenAI } from "@langchain/openai";
 import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { createRetrievalChain } from "langchain/chains/retrieval";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { HttpResponseOutputParser } from "langchain/output_parsers";
+import { HumanMessage, AIMessage, ChatMessage } from '@langchain/core/messages';
 
 export const runtime = "edge";
 
-const formatMessage = (message: VercelChatMessage) => {
-  return `${message.role}: ${message.content}`;
+const formatVercelMessages = (message: VercelChatMessage) => {
+  if (message.role === 'user') {
+    return new HumanMessage(message.content);
+  } else if (message.role === 'assistant') {
+    return new AIMessage(message.content);
+  } else {
+    console.warn(
+      `Unknown message type passed: "${message.role}". Falling back to generic message type.`,
+    );
+    return new ChatMessage({ content: message.content, role: message.role });
+  }
 };
 
 const historyAwarePrompt = ChatPromptTemplate.fromMessages([
@@ -48,7 +56,9 @@ const answerPrompt = ChatPromptTemplate.fromMessages([
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const messages = body.messages ?? [];
-  const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
+  const formattedPreviousMessages = messages
+    .slice(0, -1)
+    .map(formatVercelMessages);
   const currentMessageContent = messages[messages.length - 1].content;
 
   const embeddings = new OpenAIEmbeddings({
@@ -103,7 +113,7 @@ export async function POST(req: NextRequest) {
 
   const outputChain = RunnableSequence.from([
     conversationalRetrievalChain.pick("answer"),
-    new HttpResponseOutputParser({ contentType: "text/event-stream" }),
+    new HttpResponseOutputParser(),
   ]);
 
   const stream = await outputChain.stream({
@@ -126,10 +136,5 @@ export async function POST(req: NextRequest) {
   //   ),
   // ).toString('base64');
 
-  return new StreamingTextResponse(stream, {
-    headers: {
-      "x-message-index": (formattedPreviousMessages.length + 1).toString(),
-      // 'x-sources': serializedSources,
-    },
-  });
+  return new StreamingTextResponse(stream);
 }
