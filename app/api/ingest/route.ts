@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const embeddings = new OpenAIEmbeddings({
       openAIApiKey: process.env.OPENAI_API_KEY,
       batchSize: 100,
-      modelName: "text-embedding-small-3",
+      modelName: "text-embedding-ada-002",
     });
 
     const store = await loadPineconeStore({

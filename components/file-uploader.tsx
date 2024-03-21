@@ -58,10 +58,9 @@ const FileUploader = ({ userId, focus }: FileUploaderProps) => {
             fileName,
           }),
         });
-
-        console.log(res);
-
-        toast.success("Uploaded successfully!");
+        if (res.status === 200) {
+          toast.success("Uploaded successfully!");
+        }
       }
     } catch (err) {
       toast.error("Internal Server Error");

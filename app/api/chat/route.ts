@@ -1,8 +1,18 @@
 import { NextRequest } from "next/server";
 import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import { BytesOutputParser } from "langchain/schema/output_parser";
-import { PromptTemplate } from "langchain/prompts";
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+  PromptTemplate,
+} from "langchain/prompts";
+import { loadPineconeStore } from "../utils/pinecone";
+import { OpenAIEmbeddings } from "@langchain/openai";
+import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
+import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
+import { createRetrievalChain } from "langchain/chains/retrieval";
+import { RunnableSequence } from "@langchain/core/runnables";
+import { HttpResponseOutputParser } from "langchain/output_parsers";
 
 export const runtime = "edge";
 
@@ -10,13 +20,30 @@ const formatMessage = (message: VercelChatMessage) => {
   return `${message.role}: ${message.content}`;
 };
 
-const TEMPLATE = `You are a pirate named Patchy. All responses must be extremely verbose and in pirate dialect.
- 
-Current conversation:
-{chat_history}
- 
-User: {input}
-AI:`;
+const historyAwarePrompt = ChatPromptTemplate.fromMessages([
+  new MessagesPlaceholder("chat_history"),
+  ["user", "{input}"],
+  [
+    "user",
+    "Given the above conversation, generate a concise vector store search query to look up in order to get information relevant to the conversation.",
+  ],
+]);
+
+const ANSWER_SYSTEM_TEMPLATE = `You are a helpful AI assistant. Use the following pieces of context to answer the question at the end.
+If you don't know the answer, just say you don't know. DO NOT try to make up an answer.
+If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.
+
+<context>
+{context}
+</context>
+
+Please return your answer in markdown with clear headings and lists.`;
+
+const answerPrompt = ChatPromptTemplate.fromMessages([
+  ["system", ANSWER_SYSTEM_TEMPLATE],
+  new MessagesPlaceholder("chat_history"),
+  ["user", "{input}"],
+]);
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -24,20 +51,85 @@ export async function POST(req: NextRequest) {
   const formattedPreviousMessages = messages.slice(0, -1).map(formatMessage);
   const currentMessageContent = messages[messages.length - 1].content;
 
-  const prompt = PromptTemplate.fromTemplate(TEMPLATE);
+  const embeddings = new OpenAIEmbeddings({
+    openAIApiKey: process.env.OPENAI_API_KEY,
+    batchSize: 100,
+    modelName: "text-embedding-ada-002",
+  });
+
+  const store = await loadPineconeStore({
+    namespace: "",
+    embeddings,
+  });
+  const vectorstore = store.vectorstore;
+
+  let resolveWithDocuments: (value: Document[]) => void;
+  const documentPromise = new Promise<Document[]>((resolve) => {
+    resolveWithDocuments = resolve;
+  });
+
+  const filter = undefined;
 
   const model = new ChatOpenAI({
     temperature: 0.8,
   });
 
-  const outputParser = new BytesOutputParser();
+  const retriever = vectorstore.asRetriever({
+    filter,
+    callbacks: [
+      {
+        handleRetrieverEnd(documents) {
+          resolveWithDocuments(documents as any);
+        },
+      },
+    ],
+  });
 
-  const chain = prompt.pipe(model).pipe(outputParser);
+  const historyAwareRetrieverChain = await createHistoryAwareRetriever({
+    llm: model,
+    retriever,
+    rephrasePrompt: historyAwarePrompt,
+  });
 
-  const stream = await chain.stream({
-    chat_history: formattedPreviousMessages.join("\n"),
+  const documentChain = await createStuffDocumentsChain({
+    llm: model,
+    prompt: answerPrompt,
+  });
+
+  const conversationalRetrievalChain = await createRetrievalChain({
+    retriever: historyAwareRetrieverChain,
+    combineDocsChain: documentChain,
+  });
+
+  const outputChain = RunnableSequence.from([
+    conversationalRetrievalChain.pick("answer"),
+    new HttpResponseOutputParser({ contentType: "text/event-stream" }),
+  ]);
+
+  const stream = await outputChain.stream({
+    chat_history: formattedPreviousMessages,
     input: currentMessageContent,
   });
 
-  return new StreamingTextResponse(stream);
+  // const documents = await documentPromise;
+  // console.log(documents)
+  // const serializedSources = Buffer.from(
+  //   JSON.stringify(
+  //     documents.map((doc) => {
+  //       return {
+  //         //@ts-ignore
+  //         pageContent: doc.pageContent.slice(0, 50) + '...',
+  //         //@ts-ignore
+  //         metadata: doc.metadata,
+  //       };
+  //     }),
+  //   ),
+  // ).toString('base64');
+
+  return new StreamingTextResponse(stream, {
+    headers: {
+      "x-message-index": (formattedPreviousMessages.length + 1).toString(),
+      // 'x-sources': serializedSources,
+    },
+  });
 }
