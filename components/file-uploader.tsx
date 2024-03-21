@@ -167,7 +167,7 @@ const FileUploader = ({ userId, focus }: FileUploaderProps) => {
             </>
           )}
           <input
-            // accept="text/csv"
+            accept="text/csv"
             type="file"
             id="file-upload"
             onChange={handleFileChange}
