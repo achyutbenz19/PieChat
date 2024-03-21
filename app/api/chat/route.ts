@@ -1,6 +1,9 @@
 import { NextRequest } from "next/server";
 import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
-import { ChatPromptTemplate, MessagesPlaceholder } from "langchain/prompts";
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+} from "@langchain/core/prompts";
 import { loadPineconeStore } from "../utils/pinecone";
 import { OpenAIEmbeddings, ChatOpenAI } from "@langchain/openai";
 import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";

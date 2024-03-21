@@ -29,3 +29,8 @@ export type ChatMessagesProps = {
 export type MessageProps = {
   message: Message;
 };
+
+export type UserAvatarProps = {
+  src?: string;
+  className?: string;
+};
