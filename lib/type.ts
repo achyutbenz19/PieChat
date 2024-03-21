@@ -1,3 +1,4 @@
+import { Message } from "ai";
 import { ChangeEventHandler, FormEventHandler } from "react";
 
 export type ChatInputProps = {
@@ -19,4 +20,12 @@ export type ChatPageProps = {
 
 export type AuthFormProps = {
   focus: boolean;
+};
+
+export type ChatMessagesProps = {
+  messages: Message[];
+};
+
+export type MessageProps = {
+  message: Message;
 };

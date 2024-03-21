@@ -1,9 +1,6 @@
 import { NextRequest } from "next/server";
 import { Message as VercelChatMessage, StreamingTextResponse } from "ai";
-import {
-  ChatPromptTemplate,
-  MessagesPlaceholder,
-} from "langchain/prompts";
+import { ChatPromptTemplate, MessagesPlaceholder } from "langchain/prompts";
 import { loadPineconeStore } from "../utils/pinecone";
 import { OpenAIEmbeddings, ChatOpenAI } from "@langchain/openai";
 import { createHistoryAwareRetriever } from "langchain/chains/history_aware_retriever";
@@ -11,14 +8,14 @@ import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { createRetrievalChain } from "langchain/chains/retrieval";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { HttpResponseOutputParser } from "langchain/output_parsers";
-import { HumanMessage, AIMessage, ChatMessage } from '@langchain/core/messages';
+import { HumanMessage, AIMessage, ChatMessage } from "@langchain/core/messages";
 
 export const runtime = "edge";
 
 const formatVercelMessages = (message: VercelChatMessage) => {
-  if (message.role === 'user') {
+  if (message.role === "user") {
     return new HumanMessage(message.content);
-  } else if (message.role === 'assistant') {
+  } else if (message.role === "assistant") {
     return new AIMessage(message.content);
   } else {
     console.warn(

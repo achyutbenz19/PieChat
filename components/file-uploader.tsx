@@ -10,7 +10,6 @@ import { uuid } from "uuidv4";
 import { Spinner } from "@nextui-org/react";
 import { createClient } from "@/supabase/client";
 import { v4 as uuidv4 } from "uuid";
-import axios from "axios";
 
 const FileUploader = ({ userId, focus }: FileUploaderProps) => {
   const supabase = createClient();
