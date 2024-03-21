@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { CSVLoader } from "langchain/document_loaders/fs/csv";
 import { OpenAIEmbeddings } from "@langchain/openai";
-import { loadPineconeStore } from "@/lib/pinecone";
+import { loadPineconeStore } from "@/app/api/utils/pinecone";
 
 export async function POST(req: Request) {
   const { publicUrl: fileUrl } = await req.json();
