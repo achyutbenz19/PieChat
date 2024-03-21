@@ -48,11 +48,18 @@ const FileUploader = ({ userId, focus }: FileUploaderProps) => {
           data: { publicUrl },
         } = await supabase.storage.from("files").getPublicUrl(fileName);
 
-        const data = {
-          fileUrl: publicUrl,
-          fileName: fileName,
-        };
-        await axios.post("api/ingest", data);
+        let res = await fetch("/api/ingest", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            publicUrl,
+            fileName,
+          }),
+        });
+
+        console.log(res);
 
         toast.success("Uploaded successfully!");
       }
@@ -162,7 +169,7 @@ const FileUploader = ({ userId, focus }: FileUploaderProps) => {
             </>
           )}
           <input
-            accept="application/csv"
+            // accept="text/csv"
             type="file"
             id="file-upload"
             onChange={handleFileChange}
