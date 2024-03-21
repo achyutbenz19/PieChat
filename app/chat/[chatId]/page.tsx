@@ -8,7 +8,7 @@ export default function Chat({ params }: ChatPageProps) {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
 
   return (
-    <div className="w-full ju flex flex-col">
+    <div className="w-full flex flex-col">
       <ChatMessages messages={messages} />
       <ChatInput
         input={input}
