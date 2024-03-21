@@ -8,8 +8,9 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { uuid } from "uuidv4";
 import { Spinner } from "@nextui-org/react";
+import SignInButton from "./sign-in-button";
 
-const FileUploader = ({ focus }: FileUploaderProps) => {
+const FileUploader = ({ userId, focus }: FileUploaderProps) => {
   const router = useRouter();
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -128,7 +129,13 @@ const FileUploader = ({ focus }: FileUploaderProps) => {
               </div>
             </>
           ) : (
-            <Button onClick={handleChat}>Chat</Button>
+            <>
+              {userId ? (
+                <Button onClick={handleChat}>Chat</Button>
+              ) : (
+                <SignInButton />
+              )}
+            </>
           )}
           <input
             accept="application/csv"
