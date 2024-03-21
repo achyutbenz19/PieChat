@@ -8,9 +8,11 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { uuid } from "uuidv4";
 import { Spinner } from "@nextui-org/react";
-import SignInButton from "./sign-in-button";
+import { createClient } from "@/supabase/client";
+import { v4 as uuidv4 } from "uuid";
 
 const FileUploader = ({ userId, focus }: FileUploaderProps) => {
+  const supabase = createClient();
   const router = useRouter();
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -21,8 +23,8 @@ const FileUploader = ({ userId, focus }: FileUploaderProps) => {
   ) => {
     if (event.target.files) {
       const selectedFile = event.target.files[0];
-      if (selectedFile.size > 20000000) {
-        toast.error("File size exceeds 20 MB");
+      if (selectedFile.size > 4000000) {
+        toast.error("File size exceeds 4 MB");
         return;
       }
       setFile(selectedFile);
@@ -31,8 +33,20 @@ const FileUploader = ({ userId, focus }: FileUploaderProps) => {
   };
 
   const handleUpload = async (file: File) => {
-    setUploading(true);
-    console.log(file.name);
+    try {
+      setUploading(true);
+      const { error, data } = await supabase.storage
+        .from("files")
+        .upload(userId + "/" + uuidv4(), file);
+      if (error) {
+        toast.error(error.message);
+      }
+      if (data) {
+        toast.success("Uploaded successfully!");
+      }
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLLabelElement>) => {
