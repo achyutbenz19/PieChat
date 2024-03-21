@@ -130,11 +130,7 @@ const FileUploader = ({ userId, focus }: FileUploaderProps) => {
             </>
           ) : (
             <>
-              {userId ? (
-                <Button onClick={handleChat}>Chat</Button>
-              ) : (
-                <SignInButton />
-              )}
+              <Button onClick={handleChat}>Chat</Button>
             </>
           )}
           <input

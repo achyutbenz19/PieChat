@@ -7,7 +7,7 @@ export type ChatInputProps = {
 };
 
 export type FileUploaderProps = {
-  userId: string | undefined | null;
+  userId: string;
   focus: boolean;
 };
 

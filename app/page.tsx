@@ -39,7 +39,7 @@ export default function Component() {
             </div>
           </div>
           <div className="mx-auto aspect-video rounded-xl object-cover object-center w-full lg:order-last lg:aspect-square">
-            <FileUploader userId={user} focus={focus} />
+            <FileUploader userId={user!} focus={focus} />
           </div>
         </div>
       </div>
