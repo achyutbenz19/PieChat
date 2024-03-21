@@ -1,7 +1,7 @@
 "use client";
 import { FileUploaderProps } from "@/lib/type";
 import { cn } from "@/lib/utils";
-import { Check, Loader2Icon, Plus } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
@@ -10,6 +10,7 @@ import { uuid } from "uuidv4";
 import { Spinner } from "@nextui-org/react";
 import { createClient } from "@/supabase/client";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 const FileUploader = ({ userId, focus }: FileUploaderProps) => {
   const supabase = createClient();
@@ -35,15 +36,28 @@ const FileUploader = ({ userId, focus }: FileUploaderProps) => {
   const handleUpload = async (file: File) => {
     try {
       setUploading(true);
+      const fileName = userId + "/" + uuidv4();
       const { error, data } = await supabase.storage
         .from("files")
-        .upload(userId + "/" + uuidv4(), file);
+        .upload(fileName, file);
       if (error) {
         toast.error(error.message);
       }
       if (data) {
+        const {
+          data: { publicUrl },
+        } = await supabase.storage.from("files").getPublicUrl(fileName);
+
+        const data = {
+          fileUrl: publicUrl,
+          fileName: fileName,
+        };
+        await axios.post("api/ingest", data);
+
         toast.success("Uploaded successfully!");
       }
+    } catch (err) {
+      toast.error("Internal Server Error");
     } finally {
       setUploading(false);
     }
