@@ -121,20 +121,24 @@ export async function POST(req: NextRequest) {
     input: currentMessageContent,
   });
 
-  // const documents = await documentPromise;
-  // console.log(documents)
-  // const serializedSources = Buffer.from(
-  //   JSON.stringify(
-  //     documents.map((doc) => {
-  //       return {
-  //         //@ts-ignore
-  //         pageContent: doc.pageContent.slice(0, 50) + '...',
-  //         //@ts-ignore
-  //         metadata: doc.metadata,
-  //       };
-  //     }),
-  //   ),
-  // ).toString('base64');
+  const documents = await documentPromise;
+  const serializedSources = Buffer.from(
+    JSON.stringify(
+      documents.map((doc) => {
+        return {
+          //@ts-ignore
+          pageContent: doc.pageContent.slice(0, 50) + '...',
+          //@ts-ignore
+          metadata: doc.metadata,
+        };
+      }),
+    ),
+  ).toString('base64');
 
-  return new StreamingTextResponse(stream);
+  return new StreamingTextResponse(stream, {
+    headers: {
+      'x-message-index': (formattedPreviousMessages.length + 1).toString(),
+      'x-sources': serializedSources,
+    },
+  });
 }

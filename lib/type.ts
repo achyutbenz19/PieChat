@@ -24,6 +24,8 @@ export type AuthFormProps = {
 
 export type ChatMessagesProps = {
   messages: Message[];
+  sources: Record<string, any>;
+  isLoading: boolean;
 };
 
 export type MessageProps = {
